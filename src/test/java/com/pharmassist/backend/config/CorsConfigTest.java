@@ -39,6 +39,15 @@ class CorsConfigTest {
 	}
 
 	@Test
+	void preflightFromUnknownOriginIsRejected() throws Exception {
+		mockMvc.perform(options("/api/ping")
+						.header(HttpHeaders.ORIGIN, "http://evil.example.com")
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+				.andExpect(status().isForbidden())
+				.andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+	}
+
+	@Test
 	void requestFromUnknownOriginIsRejected() throws Exception {
 		mockMvc.perform(get("/api/ping").header(HttpHeaders.ORIGIN, "http://evil.example.com"))
 				.andExpect(status().isForbidden())
