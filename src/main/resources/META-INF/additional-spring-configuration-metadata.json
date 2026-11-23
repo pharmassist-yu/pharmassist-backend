@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "pharmassist.cors.allowed-origins",
+      "type": "java.lang.String[]",
+      "description": "Origins allowed to call /api/** from a browser (e.g. the Expo web dev server)."
+    }
+  ]
+}
