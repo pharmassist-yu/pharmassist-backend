@@ -95,6 +95,17 @@ user-defined functions, SPATIAL types, XA or `SKIP LOCKED`. `AUTO_INCREMENT` val
 necessarily sequential, views are not updatable, the default collation is `utf8mb4_bin`, and locking
 differs from InnoDB. `DatabaseMigrationTest` asserts MySQL 8, so the tests would fail against TiDB.
 
+**Regions and connection limits**
+
+| Service | Region options | Concurrent connection limit |
+|---|---|---|
+| **Render** | Oregon, Ohio, Virginia (USA), Frankfurt, Singapore. Chosen at creation; cannot be changed later. Each region has its own private network, and private services are not reachable from the public internet. | Render does not manage MySQL. The MySQL 8 server default `max_connections` is 151 (configurable by the team); the practical limit depends on the instance RAM. |
+| **Aiven** | Developer: **no choice of cloud or region** (DigitalOcean; Aiven may change provider or region). Hobbyist: DigitalOcean, Google Cloud, OVH. Startup and above: AWS, Azure, Google Cloud, DigitalOcean, OVH, UpCloud. Available regions can differ per project. | Depends on RAM and is not configurable: `75 × RAM (GiB) + 1` below 4 GiB, `100 × RAM (GiB) + 1` from 4 GiB. For Developer (1 GB) this formula gives about 76; this number is our calculation, not stated by Aiven. |
+| **Railway** | US West (California), US East (Virginia), EU West (Amsterdam), Southeast Asia (Singapore). Region can be changed later, but moving a volume causes downtime. Which plans may choose a region: not verified. | Not verified. |
+| **Amazon RDS** | Most AWS Regions; chosen at creation. Whether the Free plan covers every Region: not verified. | Default `{DBInstanceClassMemory/12582880}` (about RAM in MB / 12), configurable 1–100000. AWS gives about **60** for `db.t3.micro`; `db.t4g.micro` not stated. |
+| **Google Cloud SQL** | About 40 regions; chosen at creation and **cannot be changed** later. | Depends on the machine type's memory; default values not verified. |
+| **TiDB Cloud Starter** | Not verified (the official region page was unavailable). | **400** concurrent connections; **5,000** with a spending limit. Connections open longer than 30 minutes may be terminated. |
+
 ### 2. SOW operational requirements
 
 A provider feature only *enables* a requirement. **No provider guarantees successful restores or a
@@ -142,6 +153,78 @@ expire. The actual RPO must be measured in restore tests.
 
 Keep all database credentials in environment variables or a secret manager, never in the repository.
 
+### 4. Connecting to the Shared Cloud Database
+
+The backend already reads `DB_URL`, `DB_USERNAME` and `DB_PASSWORD` (see `application.properties`),
+so connecting to the shared database needs **no code change**: each team member only changes their
+own git-ignored `.env` file.
+
+1. Get the connection details (host, port, database name, user, password, CA certificate if needed)
+   from the person who manages the database, via the team's secret manager or another secure,
+   one-to-one channel.
+2. Put them in `.env` in the project root (placeholders shown, never commit real values):
+
+   ```properties
+   DB_URL=jdbc:mysql://<db-host>:<db-port>/<db-name>?sslMode=REQUIRED
+   DB_USERNAME=<db-user>
+   DB_PASSWORD=<db-password>
+   ```
+
+3. Start the backend (`./mvnw spring-boot:run`) and check `GET /actuator/health` returns `UP`.
+   Switching back to the local Docker database only requires restoring the local values in `.env`.
+
+**TLS.** Spring Boot 4.2.0 uses MySQL Connector/J 26.10.0, which supports the `sslMode` property.
+Its default is `PREFERRED`, which silently falls back to an unencrypted connection if the server
+does not offer TLS, so always set `sslMode` explicitly:
+
+- `sslMode=REQUIRED`: the connection must be encrypted, otherwise it fails. The server certificate is
+  **not** verified, so this does not protect against a fake server.
+- `sslMode=VERIFY_CA` / `sslMode=VERIFY_IDENTITY`: also verify the server certificate against a
+  trusted CA (`VERIFY_IDENTITY` additionally checks the host name). If the provider's CA is not in
+  the Java system trust store, import its CA certificate into a trust store and add
+  `trustCertificateKeyStoreUrl=file:<path-to-truststore.p12>&trustCertificateKeyStoreType=PKCS12&trustCertificateKeyStorePassword=<truststore-password>`
+  to `DB_URL`. Aiven requires its project CA certificate for these modes; TiDB Cloud uses Let's
+  Encrypt certificates.
+- Connector/J allows only TLS 1.2 and 1.3 by default (`tlsVersions`), matching NFR-3.1.
+- Enforce TLS on the server side as well: RDS `require_secure_transport=ON` (off by default up to
+  MySQL 8.4), Cloud SQL SSL mode `ENCRYPTED_ONLY`. Aiven states that all traffic is TLS-protected,
+  and TiDB Cloud Starter accepts only TLS 1.2/1.3 connections.
+
+Use `VERIFY_IDENTITY` for the shared database once the CA certificate is set up; `REQUIRED` is
+the minimum.
+
+**IP allowlist.** Where possible, allow only the team's addresses:
+
+- Aiven: the IP filter is `0.0.0.0/0` (open to all) by default; replace it with the team's IP ranges.
+- Cloud SQL: public-IP clients must be added as authorized networks (IPv4 CIDR), or connect through
+  the Cloud SQL Auth Proxy.
+- RDS: enable public access and allow the team's IPs on port 3306 in the VPC security group.
+- TiDB Cloud Starter: all IPs are allowed by default; firewall rules can restrict this (max 200).
+- Railway: public access is a TCP proxy; IP allowlisting not verified.
+- Render: private services are not reachable from developers' machines.
+
+Team members with changing home IPs may need their address updated in the allowlist.
+
+**Rules for the shared database.**
+
+- Never put real connection details in GitHub, the README, issues, pull requests or group chats.
+  Share them only through a secret manager or a secure channel with authorized members, and rotate
+  the password if it is exposed.
+- When the backend starts, Flyway applies pending migrations to the database it connects to. Only
+  start it against the shared database from code whose migrations are already merged to `main`.
+- Run `./mvnw clean verify` against the local Docker database, not the shared one.
+
+### 5. Sprint 5 next steps
+
+1. The team agrees on the provider and plan (recommended: Aiven for MySQL Developer) and one member
+   creates the shared database.
+2. The database owner shares the connection details through a secret manager or a secure channel,
+   and restricts access with the IP allowlist.
+3. Each team member connects with their own `.env`, confirms `/actuator/health` is `UP` and confirms
+   the connection uses TLS (`sslMode=REQUIRED` or stricter).
+4. Plan and run the SOW checks: TLS 1.2+ verification, backup and restore test (measured RTO/RPO),
+   and the 50-concurrent-user load test. Record the results; do not mark them as met before testing.
+
 ### Sources (official provider pages)
 
 - Render – Deploy MySQL: <https://render.com/docs/deploy-mysql>
@@ -171,3 +254,26 @@ Keep all database credentials in environment variables or a secret manager, neve
 - TiDB Cloud – Starter limitations and quotas: <https://docs.pingcap.com/tidbcloud/serverless-limitations/>
 - TiDB Cloud – Starter backup and restore: <https://docs.pingcap.com/tidbcloud/backup-and-restore-serverless/>
 - TiDB – MySQL compatibility: <https://docs.pingcap.com/tidb/stable/mysql-compatibility>
+- Render – Regions: <https://render.com/docs/regions>
+- Render – Private services: <https://render.com/docs/private-services>
+- Aiven – Developer plan: <https://aiven.io/docs/platform/concepts/free-plan>
+- Aiven – List of clouds: <https://aiven.io/docs/platform/reference/list_of_clouds>
+- Aiven – MySQL max connections: <https://aiven.io/docs/products/mysql/concepts/max-number-of-connections>
+- Aiven – Restrict access (IP filter): <https://aiven.io/docs/platform/howto/restrict-access>
+- Aiven – TLS/SSL certificates: <https://aiven.io/docs/platform/concepts/tls-ssl-certificates>
+- Aiven – Connect with Java: <https://aiven.io/docs/products/mysql/howto/connect-with-java>
+- Railway – Deployment regions: <https://docs.railway.com/reference/deployment-regions>
+- Railway – TCP proxy: <https://docs.railway.com/reference/tcp-proxy>
+- AWS – RDS Regions: <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html>
+- AWS – RDS quotas and max connections: <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html>
+- AWS – RDS in a VPC: <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html>
+- AWS – RDS require TLS: <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/mysql-ssl-connections.require-ssl.html>
+- AWS – RDS for MySQL TLS versions: <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/MySQL.Concepts.SSLSupport.html>
+- Google Cloud – Cloud SQL locations: <https://docs.cloud.google.com/sql/docs/mysql/locations>
+- Google Cloud – Cloud SQL quotas and limits: <https://docs.cloud.google.com/sql/docs/quotas>
+- Google Cloud – Cloud SQL authorized networks: <https://docs.cloud.google.com/sql/docs/mysql/authorize-networks>
+- TiDB Cloud – Plans: <https://docs.pingcap.com/tidbcloud/select-cluster-tier>
+- TiDB Cloud – Secure connections (TLS): <https://docs.pingcap.com/tidbcloud/secure-connections-to-serverless-clusters>
+- TiDB Cloud – Firewall rules: <https://docs.pingcap.com/tidbcloud/configure-serverless-firewall-rules-for-public-endpoints>
+- MySQL Connector/J – Security properties (`sslMode`, `tlsVersions`): <https://dev.mysql.com/doc/connector-j/en/connector-j-connp-props-security.html>
+- MySQL 8.0 – `max_connections`: <https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html>
