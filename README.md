@@ -1,8 +1,6 @@
 # PharmAssist – Backend
 Spring Boot (Java) REST API for the PharmAssist application.
 
-Setup instructions will be added in P-02d.
-
 ## Local database (MySQL 8)
 
 The backend uses a real MySQL 8 database in all environments, including tests.
@@ -50,8 +48,10 @@ Then check:
 ./mvnw clean verify           # Windows: mvnw.cmd clean verify
 ```
 
-The integration tests connect to the MySQL database configured above, so MySQL must be running
-and `DB_PASSWORD` must be set (via `.env` or the environment).
+The integration tests must run against the **local Docker MySQL 8** database described above
+(`pharmassist-mysql` on port 3307), so it must be running and `DB_PASSWORD` must be set (via `.env`
+or the environment). **Never run the tests against the shared cloud database**: they connect to
+whatever `DB_URL` points to, apply Flyway migrations and write test data.
 
 ## Database migrations (Flyway)
 
@@ -95,7 +95,7 @@ user-defined functions, SPATIAL types, XA or `SKIP LOCKED`. `AUTO_INCREMENT` val
 necessarily sequential, views are not updatable, the default collation is `utf8mb4_bin`, and locking
 differs from InnoDB. `DatabaseMigrationTest` asserts MySQL 8, so the tests would fail against TiDB.
 
-**Regions and connection limits**
+### Regions and connection limits
 
 | Service | Region options | Concurrent connection limit |
 |---|---|---|
@@ -184,24 +184,33 @@ does not offer TLS, so always set `sslMode` explicitly:
   the Java system trust store, import its CA certificate into a trust store and add
   `trustCertificateKeyStoreUrl=file:<path-to-truststore.p12>&trustCertificateKeyStoreType=PKCS12&trustCertificateKeyStorePassword=<truststore-password>`
   to `DB_URL`. Aiven requires its project CA certificate for these modes; TiDB Cloud uses Let's
-  Encrypt certificates.
+  Encrypt certificates. `.env` is read as a properties file, so use forward slashes in the path
+  (e.g. `file:///C:/<folder>/truststore.p12` on Windows), because backslashes are treated as escapes.
+- The **trust store password is also a secret**: keep it only in your own `.env` (or the secret
+  manager), never in the README, Git or chat. Do not commit the trust store file either.
 - Connector/J allows only TLS 1.2 and 1.3 by default (`tlsVersions`), matching NFR-3.1.
 - Enforce TLS on the server side as well: RDS `require_secure_transport=ON` (off by default up to
   MySQL 8.4), Cloud SQL SSL mode `ENCRYPTED_ONLY`. Aiven states that all traffic is TLS-protected,
   and TiDB Cloud Starter accepts only TLS 1.2/1.3 connections.
 
-Use `VERIFY_IDENTITY` for the shared database once the CA certificate is set up; `REQUIRED` is
-the minimum.
+**Recommendation:** use `sslMode=VERIFY_IDENTITY` for the shared database. It **requires** the
+provider's CA certificate to be trusted (Java system trust store or the trust store configured
+above). Until that is set up, `sslMode=REQUIRED` is the minimum: it encrypts the connection but does
+not prove that the client is talking to the real database server.
 
 **IP allowlist.** Where possible, allow only the team's addresses:
 
 - Aiven: the IP filter is `0.0.0.0/0` (open to all) by default; replace it with the team's IP ranges.
 - Cloud SQL: public-IP clients must be added as authorized networks (IPv4 CIDR), or connect through
   the Cloud SQL Auth Proxy.
-- RDS: enable public access and allow the team's IPs on port 3306 in the VPC security group.
+- RDS: enable public access and allow the team's IPs in the VPC security group on the instance's
+  database port (3306 by default for MySQL, but it can be set differently when the instance is
+  configured).
 - TiDB Cloud Starter: all IPs are allowed by default; firewall rules can restrict this (max 200).
 - Railway: public access is a TCP proxy; IP allowlisting not verified.
-- Render: private services are not reachable from developers' machines.
+- Render: a MySQL private service is **not reachable from developers' machines** (private services
+  have no public internet access), so it is **not a direct option for the team's shared database**.
+  Only other Render services in the same region can connect to it.
 
 Team members with changing home IPs may need their address updated in the allowlist.
 
@@ -221,7 +230,9 @@ Team members with changing home IPs may need their address updated in the allowl
 2. The database owner shares the connection details through a secret manager or a secure channel,
    and restricts access with the IP allowlist.
 3. Each team member connects with their own `.env`, confirms `/actuator/health` is `UP` and confirms
-   the connection uses TLS (`sslMode=REQUIRED` or stricter).
+   the connection uses TLS:
+   - Preferred: `sslMode=VERIFY_IDENTITY` (the provider's CA trust chain must be configured).
+   - Minimum until the CA is configured: `sslMode=REQUIRED`.
 4. Plan and run the SOW checks: TLS 1.2+ verification, backup and restore test (measured RTO/RPO),
    and the 50-concurrent-user load test. Record the results; do not mark them as met before testing.
 
