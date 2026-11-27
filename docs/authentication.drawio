@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" compressed="false">
+  <diagram id="auth105" name="Authentication flows">
+    <mxGraphModel dx="1560" dy="1050" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1560" pageHeight="1050" math="0" shadow="0" background="#ffffff">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="left" value="" style="rounded=1;arcSize=8;fillColor=#fbfcfe;strokeColor=#c8d3df;strokeWidth=1.2;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="110" width="740" height="730" as="geometry" />
+        </mxCell>
+        <mxCell id="right" value="" style="rounded=1;arcSize=8;fillColor=#fbfcfe;strokeColor=#c8d3df;strokeWidth=1.2;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="790" y="110" width="740" height="730" as="geometry" />
+        </mxCell>
+        <mxCell id="title" value="PharmAssist | Authentication Approach" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=30;fontColor=#162c46;fontStyle=1;spacing=0;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="20" width="1300" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="sub" value="SCRUM-105 / P-05c  •  Spring Security  •  Server-side sessions  •  MySQL 8  •  REST / JSON / HTTPS" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=17;fontColor=#52657b;fontStyle=0;spacing=0;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="62" width="1450" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="reghead" value="01  Registration — patient only" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=22;fontColor=#162c46;fontStyle=1;spacing=0;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="124" width="680" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="loghead" value="02  Login — all three roles" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=22;fontColor=#162c46;fontStyle=1;spacing=0;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="815" y="124" width="680" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" value="&lt;b&gt;Client&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Full name, email, password&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#eaf2fc;strokeColor=#8caad0;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="177" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="&lt;b&gt;Registration API&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;POST /api/v1/auth/register&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#edf6f0;strokeColor=#89b49c;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="260" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="&lt;b&gt;Validate input and password&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;15–128 characters; blocklist&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#edf6f0;strokeColor=#89b49c;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="343" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" value="&lt;b&gt;MySQL 8 — account lookup&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Check email uniqueness&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#f1edf9;strokeColor=#a79ac8;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="426" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="r5" value="&lt;b&gt;Argon2id password encoder&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Random salt; encode hash&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#edf6f0;strokeColor=#89b49c;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="509" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="r6" value="&lt;b&gt;MySQL 8 — insert account&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;PATIENT role; TCKN not registered&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#f1edf9;strokeColor=#a79ac8;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="592" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="r7" value="&lt;b&gt;Client — registration success&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;201 Created; navigate to login&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#eaf2fc;strokeColor=#8caad0;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="60" y="675" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="r1e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r1" target="r2">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="r2e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r2" target="r3">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="r3e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r3" target="r4">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="r4e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r4" target="r5">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="r5e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r5" target="r6">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="r6e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="r6" target="r7">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="l1" value="&lt;b&gt;Client&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Email and password&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#eaf2fc;strokeColor=#8caad0;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="820" y="177" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="l2" value="&lt;b&gt;Authentication API&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;POST /api/v1/auth/login&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#edf6f0;strokeColor=#89b49c;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="820" y="260" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="l3" value="&lt;b&gt;Rate-limit check&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Account + IP counters&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#edf6f0;strokeColor=#89b49c;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="820" y="343" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="l4" value="&lt;b&gt;MySQL 8 — account lookup&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Retrieve hash, role and account status&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#f1edf9;strokeColor=#a79ac8;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="820" y="426" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="l5" value="&lt;b&gt;Spring Security&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Verify hash and active account&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#edf6f0;strokeColor=#89b49c;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="820" y="509" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="l6" value="&lt;b&gt;Spring Session JDBC → MySQL 8&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Create/rotate ID; persist session&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#f1edf9;strokeColor=#a79ac8;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="820" y="592" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="l7" value="&lt;b&gt;Client — login success&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;200 OK; role / TCKN status&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#eaf2fc;strokeColor=#8caad0;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="820" y="675" width="465" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="l1e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="l1" target="l2">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="l2e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="l2" target="l3">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="l3e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="l3" target="l4">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="l4e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="l4" target="l5">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="l5e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="l5" target="l6">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="l6e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#52657b;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="l6" target="l7">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="r400" value="&lt;b&gt;400 Bad Request&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Invalid input&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#fff1ef;strokeColor=#d99991;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="555" y="343" width="190" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="r400e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#b45353;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="r3" target="r400">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="r409" value="&lt;b&gt;409 Conflict&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Duplicate email&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#fff1ef;strokeColor=#d99991;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="555" y="426" width="190" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="r409e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#b45353;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="r4" target="r409">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="l429" value="&lt;b&gt;429 Too Many Requests&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Rate limited&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#fff1ef;strokeColor=#d99991;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="1315" y="343" width="190" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="l429e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#b45353;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="l3" target="l429">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="l401" value="&lt;b&gt;401 Unauthorized&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Generic login failure&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#fff1ef;strokeColor=#d99991;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="1315" y="509" width="190" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="l401e" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=1.5;strokeColor=#b45353;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="l5" target="l401">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="rnote" value="Web: obtain CSRF token before registration / login." style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontColor=#52657b;fontStyle=0;spacing=0;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="775" width="685" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="lnote" value="Native: X-Auth-Token → SecureStore  |  Web: Set-Cookie → HttpOnly" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontColor=#52657b;fontStyle=0;spacing=0;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="764" width="685" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="lnote2" value="Patient without TCKN → onboarding; others → role-specific dashboard." style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontColor=#52657b;fontStyle=0;spacing=0;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="820" y="792" width="685" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="foot" value="" style="rounded=1;arcSize=8;fillColor=#f5f7fa;strokeColor=#c8d3df;strokeWidth=1.2;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="855" width="1500" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="fhead" value="Session lifecycle and security boundaries" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontColor=#162c46;fontStyle=1;spacing=0;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="865" width="1400" height="27" as="geometry" />
+        </mxCell>
+        <mxCell id="foot0" value="&lt;b&gt;Protected API request&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Session + account + role / ownership&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#edf6f0;strokeColor=#89b49c;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="55" y="903" width="350" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="foot1" value="&lt;b&gt;30-minute idle expiry&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Server deadline; background calls excluded&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#f5f7fa;strokeColor=#bdc8d5;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="422" y="903" width="350" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="foot2" value="&lt;b&gt;Logout&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Revoke current session; clear credential&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#f5f7fa;strokeColor=#bdc8d5;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="789" y="903" width="350" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="foot3" value="&lt;b&gt;Account closure&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:13px;color:#40566b&quot;&gt;Deactivate + revoke ALL sessions&lt;/span&gt;" style="rounded=1;arcSize=13;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fillColor=#fff1ef;strokeColor=#d99991;strokeWidth=1.4;fontSize=16;fontColor=#162c46;fontFamily=Arial;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="1156" y="903" width="350" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="fline" value="FR-1.11: retain records, deny access  •  NFR-3.3: salted Argon2id hash only  •  NFR-3.5: server-enforced idle timeout" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=15;fontColor=#52657b;fontStyle=0;spacing=0;connectable=0;" vertex="1" parent="1">
+          <mxGeometry x="55" y="977" width="1430" height="24" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
